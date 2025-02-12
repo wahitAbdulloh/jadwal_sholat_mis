@@ -21,4 +21,23 @@ class AppConstants {
     'maghrib': 30,
     'isya': 30,
   };
+
+  static const Map<String, int> highlightDurations = {
+    // Wajib prayers
+    'subuh': 30,
+    'dzuhur': 30,
+    'ashar': 30,
+    'maghrib': 30,
+    'isya': 30,
+
+    // Sunnah prayers
+    'imsak': 15,
+    'terbit': 15,
+    'dhuha': 15,
+  };
+
+  static const Map<String, String> alarmSounds = {
+    'wajib': 'assets/audio/adzan.mp3',
+    'sunnah': 'assets/audio/alert.mp3',
+  };
 }

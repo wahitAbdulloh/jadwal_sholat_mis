@@ -1,31 +1,20 @@
 import 'package:flutter/material.dart';
 
+enum PrayerType {
+  wajib, // For obligatory prayers
+  sunnah, // For optional prayers
+}
+
 class PrayerTime {
   final String name;
   final TimeOfDay time;
+  final PrayerType type;
 
-  PrayerTime({
+  const PrayerTime({
     required this.name,
     required this.time,
+    required this.type,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'prayer_name': name,
-      'hour': time.hour,
-      'minute': time.minute,
-    };
-  }
-
-  static PrayerTime fromMap(Map<String, dynamic> map) {
-    return PrayerTime(
-      name: map['prayer_name'],
-      time: TimeOfDay(hour: map['hour'], minute: map['minute']),
-    );
-  }
-
-  static TimeOfDay stringToTimeOfDay(String time) {
-    final parts = time.split(':');
-    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-  }
+  bool get requiresAdzanIqomah => type == PrayerType.wajib;
 }

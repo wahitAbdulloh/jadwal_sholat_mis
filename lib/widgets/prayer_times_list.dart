@@ -39,7 +39,7 @@ class PrayerTimesList extends StatelessWidget {
 
   Widget _buildTitle() {
     return const Text(
-      'Jadwal Adzan Hari Ini',
+      'Jadwal Sholat Hari Ini',
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -51,13 +51,16 @@ class PrayerTimesList extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: todaySchedule
             .map(
-              (prayer) => PrayerTimeCard(
-                prayer: prayer,
-                currentTime: currentTime,
-                isCurrentPrayer: isCurrentPrayer,
+              (prayer) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 1),
+                child: PrayerTimeCard(
+                  prayer: prayer,
+                  currentTime: currentTime,
+                  isCurrentPrayer: isCurrentPrayer,
+                ),
               ),
             )
             .toList(),
@@ -96,7 +99,7 @@ class PrayerTimeCard extends StatelessWidget {
     return Card(
       color: isCurrentPrayer ? Colors.blue.shade100 : null,
       child: Container(
-        width: 120,
+        width: 100,
         padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
