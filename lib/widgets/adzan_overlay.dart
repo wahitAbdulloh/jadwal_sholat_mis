@@ -14,6 +14,11 @@ class AdzanOverlay extends StatelessWidget {
     required this.pulseAnimation,
   });
 
+  String get displayAdzanName => currentAdzanName.toLowerCase() == 'dzuhur' &&
+          currentTime.weekday == DateTime.friday
+      ? 'Jum\'at'
+      : currentAdzanName;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
@@ -39,7 +44,7 @@ class AdzanOverlay extends StatelessWidget {
                         TextSpan(
                           children: [
                             const TextSpan(text: 'Saatnya Adzan '),
-                            TextSpan(text: currentAdzanName),
+                            TextSpan(text: displayAdzanName),
                           ],
                         ),
                       ),

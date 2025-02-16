@@ -129,8 +129,14 @@ class _HomeScreenState extends State<HomeScreen>
           setState(() {
             _showingAdzanOverlay = false;
           });
-          // Start Iqomah overlay when Adzan ends
-          _showIqomahOverlay();
+          // Only show Iqomah if it's not Friday prayer
+          final bool isFridayPrayer = _currentTime.weekday == DateTime.friday &&
+              _currentAdzanName.toLowerCase() == 'dzuhur';
+          if (!isFridayPrayer) {
+            _showIqomahOverlay();
+          } else {
+            _isIqomahComplete = true;
+          }
         }
       });
     }
@@ -177,7 +183,11 @@ class _HomeScreenState extends State<HomeScreen>
     for (var prayer in todaySchedule) {
       if (await _isCurrentPrayer(prayer.time, now)) {
         _currentPrayer = prayer;
-        _countdownText = 'Waktu Sholat ${prayer.name}';
+        String currentPrayerName =
+            prayer.name == 'Dzuhur' && DateTime.now().weekday == DateTime.friday
+                ? 'Jum\'at'
+                : prayer.name;
+        _countdownText = 'Waktu Sholat $currentPrayerName';
         return;
       }
     }
@@ -196,6 +206,11 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     if (_nextPrayer != null) {
+      String nextPrayerName = _nextPrayer!.name == 'Dzuhur' &&
+              DateTime.now().weekday == DateTime.friday
+          ? 'Jum\'at'
+          : _nextPrayer!.name;
+
       final nextPrayerMinutes =
           _nextPrayer!.time.hour * 60 + _nextPrayer!.time.minute;
       final remainingMinutes = nextPrayerMinutes - currentMinutes - 1;
@@ -206,15 +221,14 @@ class _HomeScreenState extends State<HomeScreen>
       if (remainingMinutes < 0 ||
           (remainingMinutes == 0 && remainingSeconds > 0)) {
         // Show only seconds when less than 1 minute remains
-        _countdownText = '$remainingSeconds detik menuju ${_nextPrayer!.name}';
+        _countdownText = '$remainingSeconds detik menuju $nextPrayerName';
       } else if (hours <= 0) {
         // Show both minutes and seconds when less than 1 hour remains
         _countdownText =
-            '$minutes menit $remainingSeconds detik menuju ${_nextPrayer!.name}';
+            '$minutes menit $remainingSeconds detik menuju $nextPrayerName';
       } else {
         // Show hours and minutes for times over 1 hour
-        _countdownText =
-            '$hours jam $minutes menit menuju ${_nextPrayer!.name}';
+        _countdownText = '$hours jam $minutes menit menuju $nextPrayerName';
       }
     } else {
       _countdownText = 'Semua waktu sholat hari ini telah lewat';
