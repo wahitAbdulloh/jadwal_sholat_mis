@@ -6,19 +6,19 @@ class AppConstants {
 
   static const Duration adzanDuration = Duration(minutes: 3);
   static const Map<String, int> iqomahDurations = {
-    'Subuh': 30, // 30 minutes
-    'Dzuhur': 17, // 17 minutes
-    'Ashar': 15, // 15 minutes
-    'Maghrib': 10, // 10 minutes
-    'Isya': 15, // 15 minutes,
+    'Subuh': 27, // 30 minutes
+    'Dzuhur': 17, // 20 minutes
+    'Ashar': 12, // 15 minutes
+    'Maghrib': 7, // 10 minutes
+    'Isya': 12, // 15 minutes,
   };
   static const Duration alarmAutoStopDuration = Duration(seconds: 5);
 
   static const Map<String, int> prayerHighlightDurations = {
-    'subuh': 30,
-    'dzuhur': 30,
-    'ashar': 7,
-    'maghrib': 30,
-    'isya': 30,
+    'subuh': 60,
+    'dzuhur': 60,
+    'ashar': 40,
+    'maghrib': 40,
+    'isya': 40,
   };
 }
