@@ -54,13 +54,9 @@ class AlarmService {
 
   Future<void> _playAlarmSound() async {
     if (!_audioManager.isPlaying) {
-      await _audioManager.playAlarm();
+      await _audioManager.playAdzanAlarm();
     }
   }
-
-  // Future<void> stopAlarm() async {
-  //   await _audioManager.stopAlarm();
-  // }
 
   Future<void> setAlarm(TimeOfDay time) async {
     _alarms.add(time);

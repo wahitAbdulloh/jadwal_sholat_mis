@@ -101,7 +101,7 @@ class _IqomahOverlayState extends State<IqomahOverlay> {
                     ),
                     child: DefaultTextStyle(
                       style: const TextStyle(
-                        fontSize: 24,
+                        fontSize: 30,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                       ),

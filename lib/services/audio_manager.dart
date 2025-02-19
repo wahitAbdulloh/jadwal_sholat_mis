@@ -20,23 +20,23 @@ class AudioManager {
     try {
       _audioPlayer
         ..setPlayerMode(PlayerMode.mediaPlayer)
-        ..setVolume(1.0)
         ..setSourceAsset('audio/alarm.wav');
     } catch (e) {
       debugPrint('Error initializing audio: $e');
     }
   }
 
-  Future<void> playAlarm() async {
+  Future<void> playAdzanAlarm() async {
     if (_isPlaying) return;
 
     try {
-      _isPlaying = true;
+      await _audioPlayer.setVolume(1.0);
       await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+      _isPlaying = true;
       await _audioPlayer.play(AssetSource('audio/alarm.wav'));
       _scheduleAutoStop();
     } catch (e) {
-      debugPrint('Error playing alarm: $e');
+      debugPrint('Error playing adzan alarm: $e');
       _isPlaying = false;
     }
   }
@@ -50,6 +50,25 @@ class AudioManager {
         debugPrint('Auto-stopping alarm');
       },
     );
+  }
+
+  Future<void> playIqomahAlarm() async {
+    if (_isPlaying) return;
+
+    try {
+      await _audioPlayer.setVolume(0.5);
+      await _audioPlayer.setReleaseMode(ReleaseMode.release); // Play once
+      _isPlaying = true;
+      await _audioPlayer.play(AssetSource('audio/alarm.wav'));
+
+      // Reset playing state after completion
+      _audioPlayer.onPlayerComplete.listen((_) {
+        _isPlaying = false;
+      });
+    } catch (e) {
+      debugPrint('Error playing iqomah alarm: $e');
+      _isPlaying = false;
+    }
   }
 
   Future<void> _stopAlarm() async {

@@ -110,6 +110,9 @@ class _HomeScreenState extends State<HomeScreen>
         _adzanProgress = 0.0;
       });
 
+      // Play Adzan alarm
+      _audioManager.playAdzanAlarm();
+
       // Start 3-minute timer for adzan
       const adzanDuration = AppConstants.adzanDuration;
       const updateInterval = Duration(milliseconds: 100);
@@ -157,10 +160,9 @@ class _HomeScreenState extends State<HomeScreen>
           _iqomahSeconds--;
         } else {
           _showingIqomahOverlay = false;
-          _isIqomahComplete = true; // Set to true when Iqomah ends
+          _isIqomahComplete = true;
           timer.cancel();
-          // Play audio when Iqomah ends
-          _audioManager.playAlarm();
+          _audioManager.playIqomahAlarm();
         }
       });
     });

@@ -113,7 +113,10 @@ class PrayerTimeCard extends StatelessWidget {
   Widget _buildPrayerName(bool isCurrentPrayer) {
     return FittedBox(
       child: Text(
-        prayer.name,
+        prayer.name.toLowerCase() == 'dzuhur' &&
+                DateTime.now().weekday == DateTime.friday
+            ? 'Jum\'at'
+            : prayer.name,
         style: TextStyle(
           fontSize: 20,
           fontWeight: isCurrentPrayer ? FontWeight.bold : FontWeight.normal,
