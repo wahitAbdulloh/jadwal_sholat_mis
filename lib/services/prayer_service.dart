@@ -6,11 +6,16 @@ import 'alarm_service.dart';
 class PrayerService {
   final AlarmService _alarmService;
 
-  PrayerService(this._alarmService);
+  PrayerService(this._alarmService); // Hapus karakter '/' yang tidak sengaja
 
   Future<List<PrayerTime>> getTodaySchedule() async {
     final today = DateTime.now();
     return getScheduleForDate(today);
+  }
+
+  Future<List<PrayerTime>> getNextDaySchedule() async {
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    return _getPrayerTimes(tomorrow);
   }
 
   Future<List<PrayerTime>> getScheduleForDate(DateTime date) async {
@@ -18,27 +23,40 @@ class PrayerService {
     return prayerSchedule[scheduleDate] ?? [];
   }
 
-  Future<PrayerTime?> getNextPrayer() async {
-    final todaySchedule = await getTodaySchedule();
-    if (todaySchedule.isEmpty) return null;
-
-    final now = TimeOfDay.now();
-    final currentMinutes = _convertToMinutes(now);
-
-    try {
-      return todaySchedule.firstWhere(
-          (prayer) => _convertToMinutes(prayer.time) > currentMinutes);
-    } catch (_) {
-      return todaySchedule.first; // Return first prayer of next day
-    }
+  Future<List<PrayerTime>> _getPrayerTimes(DateTime date) async {
+    final scheduleDate = DateTime(date.year, date.month, date.day);
+    return prayerSchedule[scheduleDate] ?? [];
   }
-
-  int _convertToMinutes(TimeOfDay time) => time.hour * 60 + time.minute;
 
   Future<void> initializePrayerAlarms() async {
     final todaySchedule = await getTodaySchedule();
     for (var prayer in todaySchedule) {
       await _alarmService.setAlarm(prayer.time);
     }
+  }
+
+  Future<List<PrayerTime>> getCurrentSchedule() async {
+    final schedule = await getTodaySchedule();
+
+    // If all prayers have passed and it's past midnight, get next day's schedule
+    if (schedule.isEmpty || _haveAllPrayersPassed(schedule)) {
+      return getNextDaySchedule();
+    }
+
+    return schedule;
+  }
+
+  bool _haveAllPrayersPassed(List<PrayerTime> schedule) {
+    if (schedule.isEmpty) return true;
+
+    final now = TimeOfDay.now();
+    final currentMinutes = now.hour * 60 + now.minute;
+
+    // Get the last prayer time of the day
+    final lastPrayer = schedule.last;
+    final lastPrayerMinutes =
+        lastPrayer.time.hour * 60 + lastPrayer.time.minute;
+
+    return currentMinutes > lastPrayerMinutes;
   }
 }

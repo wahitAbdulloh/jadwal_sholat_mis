@@ -43,7 +43,16 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
 
-    // Initialize animations first
+    // Inisialisasi services
+    try {
+      _initializeServices();
+    } catch (e) {
+      print('Error initializing services: $e');
+    }
+  }
+
+  Future<void> _initializeServices() async {
+    // Initialize controllers first
     _pulseController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -57,25 +66,44 @@ class _HomeScreenState extends State<HomeScreen>
     // Start the animation
     _pulseController.repeat(reverse: true);
 
-    // Initialize other services
+    // Initialize services one by one
     _prayerService = PrayerService(_alarmService);
-    _prayerService.initializePrayerAlarms();
+    await _prayerService.initializePrayerAlarms();
 
-    _loadInitialData();
+    // Load initial data
+    await _loadInitialData();
 
+    if (mounted) {
+      // Start timers only after successful initialization
+      _startTimers();
+    }
+  }
+
+  void _startTimers() {
+    // Update current time
     Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _currentTime = DateTime.now();
-        _updateCountdown();
-      });
+      if (mounted) {
+        setState(() {
+          _currentTime = DateTime.now();
+          _updateCountdown();
+        });
+      }
     });
 
+    // Start adzan checker
     _startAdzanCheck();
+
+    // Schedule refresh
+    Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (mounted) {
+        _refreshSchedule();
+      }
+    });
   }
 
   Future<void> _loadInitialData() async {
     try {
-      final schedule = await _prayerService.getTodaySchedule();
+      final schedule = await _prayerService.getCurrentSchedule();
       if (mounted) {
         setState(() {
           _todaySchedule = schedule;
@@ -84,6 +112,15 @@ class _HomeScreenState extends State<HomeScreen>
       }
     } catch (e) {
       print('Error loading schedule: $e');
+    }
+  }
+
+  Future<void> _refreshSchedule() async {
+    final schedule = await _prayerService.getCurrentSchedule();
+    if (mounted) {
+      setState(() {
+        _todaySchedule = schedule;
+      });
     }
   }
 
@@ -194,16 +231,34 @@ class _HomeScreenState extends State<HomeScreen>
       }
     }
 
-    // If no current prayer, find next prayer
+    // Find next prayer time in today's schedule
     _nextPrayer = null;
-
-    // Find next prayer time
     for (var prayer in todaySchedule) {
       final prayerMinutes = prayer.time.hour * 60 + prayer.time.minute;
       if (prayerMinutes > currentMinutes ||
           (prayerMinutes == currentMinutes && currentSeconds == 0)) {
         _nextPrayer = prayer;
         break;
+      }
+    }
+
+    // If no next prayer found in today's schedule, get tomorrow's first prayer
+    if (_nextPrayer == null) {
+      final tomorrowSchedule = await _prayerService.getNextDaySchedule();
+      if (tomorrowSchedule.isNotEmpty) {
+        _nextPrayer = tomorrowSchedule.first;
+
+        // Calculate time until next prayer including the remaining time today
+        final nextPrayerMinutes =
+            _nextPrayer!.time.hour * 60 + _nextPrayer!.time.minute;
+        final remainingMinutesToday = 24 * 60 - (currentMinutes + 1);
+        final totalMinutes = remainingMinutesToday + nextPrayerMinutes;
+        final hours = totalMinutes ~/ 60;
+        final minutes = totalMinutes % 60;
+
+        String nextPrayerName = _nextPrayer!.name;
+        _countdownText = '$hours jam $minutes menit menuju $nextPrayerName';
+        return;
       }
     }
 
