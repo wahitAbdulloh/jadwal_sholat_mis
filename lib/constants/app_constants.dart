@@ -8,8 +8,8 @@ class AppConstants {
   static const Map<String, int> iqomahDurations = {
     'Subuh': 27, // 30 minutes
     'Dzuhur': 17, // 20 minutes
-    'Ashar': 12, // 15 minutes
-    'Maghrib': 7, // 10 minutes
+    'Ashar': 17, // 20 minutes
+    'Maghrib': 9, // 12 minutes
     'Isya': 12, // 15 minutes,
   };
   static const Duration alarmAutoStopDuration = Duration(seconds: 5);
