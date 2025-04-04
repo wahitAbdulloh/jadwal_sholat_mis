@@ -40,6 +40,8 @@ class PrayerService {
 
     // If all prayers have passed and it's past midnight, get next day's schedule
     if (schedule.isEmpty || _haveAllPrayersPassed(schedule)) {
+      // Clear all previous alarms before setting new ones for the next day
+      await _alarmService.clearAllAlarms();
       return getNextDaySchedule();
     }
 

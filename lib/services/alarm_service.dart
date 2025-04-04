@@ -103,4 +103,11 @@ class AlarmService {
 
     return scheduledDate;
   }
+
+  Future<void> clearAllAlarms() async {
+    // Cancel all scheduled notifications
+    await _notifications.cancelAll();
+    // Clear the alarm list
+    _alarms.clear();
+  }
 }
